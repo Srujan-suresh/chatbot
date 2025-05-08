@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chatbox {
+            width: 370px;
+            height: 480px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .chat {
+            margin-bottom: 15px;
+        }
+
+        .bot {
+            background: #e6f3ff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            max-width: 90%;
+        }
+
+        .user {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            padding: 10px;
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #submitBtn {
+            margin-top: 10px;
+            display: none;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="chatbox">
+    <div id="chatContainer">
+        <div class="chat"><div class="bot">Hi, welcome to our site!</div></div>
+        <div class="chat"><div class="bot">What are you looking for?</div></div>
+        <div class="chat btn-group" id="step1">
+            <button class="btn" onclick="nextStep('New Enquiry')">New Enquiry</button>
+            <button class="btn" onclick="nextStep('Existing Trainee')">Existing Trainee</button>
+            <button class="btn" onclick="nextStep('Other')">Other</button>
+        </div>
+    </div>
+
+    <form id="leadForm" method="POST" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="purpose" id="purpose">
+        <input type="text" name="name" placeholder="Enter your name" required>
+        <input type="text" name="phone" placeholder="Enter your phone number" required>
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit" class="btn" id="submitBtn">Submit</button>
+    </form>
+</div>
+
+<script>
+    function nextStep(choice) {
+        document.getElementById('purpose').value = choice;
+        const container = document.getElementById('chatContainer');
+
+        container.innerHTML += `
+            <div class="chat user"><div class="bot">${choice}</div></div>
+            <div class="chat"><div class="bot">Great! Please enter your name, phone, and email below 👇</div></div>
+        `;
+
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('leadForm').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'block';
+    }
+</script>
+</body>
+</html>

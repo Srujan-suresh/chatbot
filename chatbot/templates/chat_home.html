@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bright Ads Chat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Your full CSS code remains unchanged – already well-structured */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container,.chat-messages,
+    .dynamicChat {
+      width: 400px;
+      max-width: 90vw;
+      height: 450px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      padding-bottom: 100px; /* Leaves space above input box */
+    }
+
+    .section {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .section.active {
+      display: flex;
+    }
+
+    .header.home {
+      background-color: #02126A;
+      height: 70%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      position: relative;
+    }
+
+    .header.chat {
+      background-color: #02126A;
+      height: 80px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      color: white;
+      position: relative;
+    }
+
+    .header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+    }
+
+    .header.home img {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .header.home h2 {
+      margin: 10px 0 5px;
+      font-size: 22px;
+    }
+
+    .header.home p {
+      margin: 0;
+      font-size: 14px;
+      color: #f8f8f8;
+    }
+
+    .header.chat h2 {
+      margin-left: 10px;
+      font-size: 20px;
+    }
+
+    .cta-box {
+      position: absolute;
+      bottom: 220px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      border-radius: 15px;
+      padding: 15px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .cta-box i {
+      font-size: 18px;
+      color: #02126A;
+    }
+
+    .cta-box span {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .card-box {
+      background-color: white;
+      margin: 20px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .card-box img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .chat-info h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .chat-info p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .chat-meta {
+      text-align: right;
+      font-size: 12px;
+      color: #888;
+      margin-left: auto;
+    }
+
+    .chat-meta i {
+      color: #02126A;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 60px;
+      background: white;
+      border-top: 1px solid #ddd;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .bottom-nav div {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    .bottom-nav .active {
+      color: #02126A;
+      font-weight: bold;
+    }
+
+    .bottom-nav i {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 3px;
+    }
+
+    /* Chatbot Styles */
+    #chatbotContent .chatbox {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    #chatbotContent .chat {
+      margin-bottom: 15px;
+    }
+
+    #chatbotContent .bot {
+      background: #e6f3ff;
+      padding: 10px 15px;
+      border-radius: 20px;
+      display: inline-block;
+      max-width: 90%;
+    }
+
+    #chatbotContent .user {
+      text-align: right;
+      margin-top: 5px;
+    }
+
+    #chatbotContent .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #chatbotContent .btn {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    #chatbotContent .btn:hover {
+      background: #0056b3;
+    }
+
+    #chatbotContent input[type="text"],
+    #chatbotContent input[type="email"] {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #chatbotContent #submitBtn {
+      margin-top: 10px;
+      display: none;
+    }
+
+    #chatbotContent form {
+      margin-top: 10px;
+    }
+
+    .bot-box {
+  background: #E6F3FF;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin: 10px 0;
+  max-width: 90%;
+  box-shadow: 0 1px 3px #e6f3ff;
+}
+
+.bot-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.bot-message {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.bot-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bot-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.bot-input button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.bot-time {
+  text-align: right;
+  font-size: 12px;
+  color: #777;
+  margin-top: 6px;
+}
+
+#chatbotContent .bot.thanks-message {
+  background-color: #87cefa; /* soft yellow */
+  color: #333;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 16px;
+  display: inline-block;
+}
+
+#chatbotContent .bot.details-message {
+  background-color: #87cefa; /* soft yellow */
+  color: #333;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 16px;
+  display: inline-block;
+}
+
+
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+<audio id="popupSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3" preload="auto"></audio>
+
+
+
+
+  <!-- Home Section -->
+  <div id="homeContent" class="section active">
+    <div class="header home">
+      <img src="https://media.licdn.com/dms/image/v2/C560BAQFBF-t2aXNX-Q/company-logo_200_200/company-logo_200_200/0/1630648551968/brightadsindia_privateltd_logo?e=2147483647&v=beta&t=e3Kx2Rsy67OBIoOd3KtuR1URjz3gbUJS4_UclMjgdzM" alt="Logo">
+      <h2>Bright Ads Digital Pvt Ltd</h2>
+      <p>We are here to help you!</p>
+    </div>
+    <div class="cta-box" onclick="showSection('chatbot')">
+      <i class="fas fa-comment-alt"></i>
+      <span>Chat with us now</span>
+    </div>
+  </div>
+
+  <!-- Conversation Section -->
+  <div id="conversationContent" class="section">
+    <div class="header chat">
+      <img src="https://media.licdn.com/dms/image/v2/C560BAQFBF-t2aXNX-Q/company-logo_200_200/company-logo_200_200/0/1630648551968/brightadsindia_privateltd_logo?e=2147483647&v=beta&t=e3Kx2Rsy67OBIoOd3KtuR1URjz3gbUJS4_UclMjgdzM" alt="Logo">
+      <h2>Conversation</h2>
+    </div>
+    <div class="card-box" onclick="showSection('chatbot')">
+      <img src="https://media.licdn.com/dms/image/v2/C560BAQFBF-t2aXNX-Q/company-logo_200_200/company-logo_200_200/0/1630648551968/brightadsindia_privateltd_logo?e=2147483647&v=beta&t=e3Kx2Rsy67OBIoOd3KtuR1URjz3gbUJS4_UclMjgdzM" alt="Mavis">
+      <div class="chat-info">
+        <h4>Brevis</h4>
+        <p>What are you looking for?</p>
+      </div>
+      <div class="chat-meta">
+        <div>Just now</div>
+        <i class="fas fa-bell"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Section -->
+  <div id="chatbotContent" class="section">
+    <div class="header chat" style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center;">
+        <button onclick="goBack()" style="background: transparent; border: none; font-size: 22px; margin-right: 10px; cursor: pointer; color: #fff; font-weight: bold;">&lt;</button>
+        <img src="https://media.licdn.com/dms/image/v2/C560BAQFBF-t2aXNX-Q/company-logo_200_200/company-logo_200_200/0/1630648551968/brightadsindia_privateltd_logo?e=2147483647&v=beta&t=e3Kx2Rsy67OBIoOd3KtuR1URjz3gbUJS4_UclMjgdzM" alt="Logo" style="height: 45px; margin-right: 8px;">
+        <h2 style="margin: 0;">Brevis</h2>
+      </div>
+    </div>
+
+    <div class="chatbox" id="chatContainer">
+      <div class="chat"><div class="bot">Hi, welcome to Bright Ads Digital Pvt Ltd!</div></div>
+      <div class="chat"><div class="bot">What are you looking for?</div></div>
+
+      
+
+      <div class="chat btn-group" id="step1">
+        <button class="btn" onclick="nextStep('Website Development')">Website Development</button>
+        <button class="btn" onclick="nextStep('Digital Marketing')">Digital Marketing</button>
+        <button class="btn" onclick="nextStep('Promotion & Advertising')">Promotion & Advertising</button>
+        <button class="btn" onclick="nextStep('Graphic Design')">Graphic Design</button>
+      </div>
+
+
+
+      <div id="dynamicChat"></div>
+
+      <form id="leadForm" method="POST" style="display: none;" onsubmit="handleSubmit(event)">
+        {% csrf_token %}
+        <input type="hidden" name="purpose" id="purpose">
+        <input type="text" name="name" placeholder="Enter your name" required>
+        <input type="text" name="phone" placeholder="Enter your phone number" required>
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit" class="btn">Submit</button>
+      </form>
+    </div>
+
+    <style>
+      .chat .user {
+        background-color: whitesmoke;
+        color: #333;
+        padding: 10px 14px;
+        border-radius: 12px;
+        max-width: 75%;
+        margin-left: auto;
+        margin-bottom: 10px;
+        text-align: right;
+      }
+    </style>
+
+
+    <!-- Input Box -->
+    <div id="inputBoxContainer" style="position: absolute; bottom: 45px; width: 100%; padding: 10px; background: #ffffff; box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); display: flex; gap: 10px;">
+      <input type="text" id="userInput" placeholder="Type anything..." style="flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ccc;" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); handleTextInput(); }">
+      <button onclick="handleTextInput()" class="btn" style="border-radius: 25px; padding: 10px 18px;">Send</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div id="homeBtn" class="active" onclick="showSection('home')">
+      <i class="fas fa-home"></i>
+      Home
+    </div>
+    <div id="chatBtn" onclick="showSection('conversation')">
+      <i class="fas fa-comment-dots"></i>
+      Conversation
+    </div>
+  </div>
+</div>
+
+<!-- Continue from the previous file -->
+<script>
+  function scrollToBottom() {
+    const containers = [
+      document.getElementById("chatContainer"),
+      document.getElementById("chat-messages"),
+      document.getElementById("dynamicChat")
+    ];
+    containers.forEach(container => {
+      if (container) {
+        requestAnimationFrame(() => {
+          container.scrollTop = container.scrollHeight;
+        });
+      }
+    });
+  }
+
+  function showSection(id) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(id + 'Content').classList.add('active');
+
+    document.querySelectorAll('.bottom-nav div').forEach(btn => btn.classList.remove('active'));
+    if (id === 'home') document.getElementById('homeBtn').classList.add('active');
+    if (id === 'conversation') document.getElementById('chatBtn').classList.add('active');
+
+    if (id === 'chatbot') {
+      const audio = document.getElementById('popupSound');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Autoplay blocked:", e));
+      }
+      scrollToBottom();
+    }
+  }
+
+  function goBack() {
+    showSection('conversation');
+  }
+
+  function addBotMessage(message) {
+    const chatBox = document.getElementById('chat-messages');
+    const botMsg = document.createElement('div');
+    botMsg.classList.add('bot-message');
+    botMsg.innerText = message;
+    chatBox.appendChild(botMsg);
+    scrollToBottom();
+
+    const audio = document.getElementById('popupSound');
+    if (audio) audio.play();
+  }
+
+  function endChat() {
+    document.getElementById("userInput").value = "";
+    document.getElementById("dynamicChat").innerHTML = "";
+    document.getElementById("step1").style.display = "flex";
+    document.getElementById("leadForm").style.display = "none";
+    document.querySelector(".chat-meta div").innerText = "Just now";
+    document.querySelector(".chat-info p").innerText = "Conversation ended.";
+    showSection('conversation');
+  }
+
+  function nextStep(option) {
+    document.getElementById('step1').style.display = 'none';
+
+    const dynamicChat = document.getElementById('dynamicChat');
+    let response = '';
+
+    if (['Website Development', 'Promotion & Advertising', 'Graphic Design', 'Digital Marketing'].includes(option)) {
+      response = '<div class="chat"><div class="bot">Please enter your name and contact details below:</div></div>';
+      document.getElementById('leadForm').style.display = 'block';
+      document.getElementById('purpose').value = option;
+    } else if (option === 'Existing Client') {
+      response = '<div class="chat"><div class="bot">Please describe your issue and we’ll get back to you shortly.</div></div>';
+    } else {
+      response = '<div class="chat"><div class="bot">Please let us know how we can help.</div></div>';
+    }
+
+    dynamicChat.innerHTML += response;
+  }
+
+
+  function restartChat() {
+  const chatContainer = document.getElementById("chatContainer");
+
+  // Keep only the first 3 elements: greeting + buttons
+  const childrenToKeep = 3;
+  while (chatContainer.children.length > childrenToKeep) {
+    chatContainer.removeChild(chatContainer.lastChild);
+  }
+
+  // Hide dynamic areas
+  document.getElementById("leadForm").style.display = "none";
+  document.getElementById("dynamicChat").innerHTML = "";
+
+  // Optionally update timestamp or status
+  document.querySelector(".chat-info p").innerText = "Chat restarted.";
+  document.querySelector(".chat-meta div").innerText = "Just now";
+
+  // Scroll to bottom
+  scrollToBottom();
+}
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const name = event.target.name.value;
+    const phone = event.target.phone.value;
+    const email = event.target.email.value;
+    const purpose = event.target.purpose.value;
+
+    document.getElementById("chatContainer").innerHTML += `
+      <div class="chat user"><div class="bot details-message">Name: ${name}<br>Phone: ${phone}<br>Email: ${email}</div></div>
+      <div class="chat"><div class="bot thanks-message">Thanks, ${name} 😊! U Can Contact Us With 8884005400</div></div>
+    `;
+
+    event.target.reset();
+    document.getElementById("leadForm").style.display = "none";
+    scrollToBottom();
+  }
+
+  let contactStep = 0;
+let contactData = {
+  name: '',
+  email: '',
+  phone: ''
+};
+
+function handleTextInput(inputOverride = null) {
+  const inputField = document.getElementById('userInput');
+  const userInput = inputOverride !== null ? inputOverride : inputField.value.trim();
+
+  if (!userInput) return;
+
+  const chatContainer = document.getElementById('chatContainer');
+  const userMsg = document.createElement('div');
+  userMsg.classList.add('chat', 'user');
+  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  userMsg.innerHTML = `<div class="user">${userInput}<div class="bot-time">${currentTime}</div></div>`;
+  chatContainer.appendChild(userMsg);
+
+  if (inputOverride === null) inputField.value = '';
+
+  // Step-wise interaction
+  if (contactStep === 0) {
+    addBotPopup("Hello! Please provide your name", true);
+    contactStep = 1;
+    scrollToBottom();
+    return;
+  }
+
+  if (contactStep === 1) {
+    if (userInput.length < 2 || /\d/.test(userInput)) {
+      addBotPopup("That doesn't look like a valid name. Please enter your name again.", true);
+      scrollToBottom();
+      return; // Stay at step 1
+    }
+    contactData.name = userInput;
+    contactStep = 2;
+    addBotPopup("Thanks! Could you please share your email?", true);
+    scrollToBottom();
+    return;
+  }
+
+  if (contactStep === 2) {
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/i;
+    if (!emailPattern.test(userInput)) {
+      addBotPopup("Hmm, that doesn't seem like a valid email. Please enter a correct email.", true);
+      scrollToBottom();
+      return; // Stay at step 2
+    }
+    contactData.email = userInput;
+    contactStep = 3;
+    addBotPopup("Great! Lastly, can you provide your phone number?", true);
+    scrollToBottom();
+    return;
+  }
+
+  if (contactStep === 3) {
+    const phonePattern = /^\d{10}$/;
+    if (!phonePattern.test(userInput)) {
+      addBotPopup("That doesn't look like a valid phone number. Please enter a 10-digit number.", true);
+      scrollToBottom();
+      return; // Stay at step 3
+    }
+    contactData.phone = userInput;
+    contactStep = 4;
+
+    const summary = `
+      Thank you, ${contactData.name}!<br>
+      📧 Email: ${contactData.email}<br>
+      📞 Phone: ${contactData.phone}<br><br>
+      ✅ Our team will get in touch with you shortly.
+    `;
+    addBotPopup(summary, false);
+    scrollToBottom();
+    return;
+  }
+}
+
+
+
+  function addBotPopup(message, showInput = false) {
+    const chatContainer = document.getElementById('chatContainer');
+    const botBox = document.createElement('div');
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    botBox.classList.add('chat');
+    botBox.innerHTML = `
+      <div class="bot-box">
+        <div class="bot-name">Brevis</div>
+        <div class="bot-message">${message}</div>
+        ${showInput ? `
+          <div class="bot-input">
+            <input type="text" class="stepInput" placeholder="Type here..." />
+             <button onclick="submitStepInput()">Submit <span style="font-weight:bold;">→</span></button>
+
+          </div>
+        ` : ''}
+        <div class="bot-time">${currentTime}</div>
+      </div>
+    `;
+
+    chatContainer.appendChild(botBox);
+    scrollToBottom();
+
+    if (showInput) {
+      setTimeout(() => {
+        document.getElementById('stepInput')?.focus();
+      }, 100);
+    }
+  }
+
+  function submitStepInput() {
+  const inputs = document.querySelectorAll('.stepInput');
+  const input = inputs[inputs.length - 1]; // Last visible input
+  const value = input.value.trim();
+  if (value) {
+    handleTextInput(value);
+  }
+}
+
+</script>
+
+<!-- Add End Chat button inside chatbot header -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const chatbotHeader = document.querySelector('#chatbotContent .header.chat');
+  
+    if (chatbotHeader) {
+      // Create End Chat Button
+      const endChatBtn = document.createElement('button');
+      endChatBtn.innerText = 'End Chat';
+      endChatBtn.style.cssText = `
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-right: 10px;
+      `;
+      endChatBtn.onclick = () => {
+        console.log("End Chat clicked"); // For debugging
+        endChat(); // Calls your existing function
+      };
+  
+      // Create Restart Button
+      const restartBtn = document.createElement('button');
+      restartBtn.innerText = '⟳ Restart';
+      restartBtn.style.cssText = `
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-right: 10px;
+      `;
+      restartBtn.onclick = () => {
+        console.log("Restart Chat clicked");
+        restartChat(); // Calls your existing function
+      };
+  
+      // Append buttons to the chatbot header
+      chatbotHeader.appendChild(endChatBtn);
+      chatbotHeader.appendChild(restartBtn);
+    } else {
+      console.warn("⚠️ chatbotHeader not found. Check if #chatbotContent .header.chat exists in your HTML.");
+    }
+  });
+  </script>
+  
+  
+
+</body>
+</html>
