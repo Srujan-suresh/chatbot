@@ -73,6 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'chatbot_project.wsgi.application'
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 
 # Database
