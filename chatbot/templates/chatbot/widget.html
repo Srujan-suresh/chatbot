@@ -1,0 +1,33 @@
+<!-- templates/chatbot/widget.html -->
+{% csrf_token %}
+<div id="chatbox" class="p-3" style="max-height: 500px; overflow-y: auto;">
+  <h5>Hello! How can I help you?</h5>
+  <form method="POST" id="chat-form">
+    <input type="text" name="message" id="message-input" class="form-control my-2" placeholder="Type your message..." required>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+  <div id="chat-response" class="mt-3"></div>
+</div>
+
+<script>
+document.getElementById('chat-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const input = document.getElementById('message-input');
+  const responseDiv = document.getElementById('chat-response');
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  const response = await fetch("{% url 'chat_api' %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({ message: input.value })
+  });
+
+  const data = await response.json();
+  responseDiv.innerHTML += `<p><strong>You:</strong> ${input.value}</p>`;
+  responseDiv.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+  input.value = '';
+});
+</script>

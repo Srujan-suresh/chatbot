@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import LeadForm
-
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def chat_home(request):
@@ -17,3 +17,8 @@ def chatbot_view(request):
         form = LeadForm()
     return render(request, 'chatbot.html', {'form': form})
 
+
+
+@ensure_csrf_cookie
+def chatbot_widget(request):
+    return render(request, 'chatbot/widget.html')
